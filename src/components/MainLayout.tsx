@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 
-type Props = {
+interface Props  {
   children: string | JSX.Element | JSX.Element[];
 };
 

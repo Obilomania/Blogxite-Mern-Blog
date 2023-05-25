@@ -1,6 +1,7 @@
 import React from 'react'
 import MainLayout from '../../components/MainLayout'
 import HeroSection from './HeroSection'
+import Post from './Post'
 
 
 
@@ -8,7 +9,8 @@ import HeroSection from './HeroSection'
 const Home = () => {
   return (
       <MainLayout>
-          <HeroSection/>
+      <HeroSection />
+      <Post/>
     </MainLayout>
   )
 }

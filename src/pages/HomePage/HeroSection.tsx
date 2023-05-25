@@ -22,17 +22,18 @@ const HeroSection = () => {
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tempora
               nobis voluptates aut expedita cumque quaerat enim exercitationem,
               quam minus nostrum eveniet et nemo corrupti repellat pariatur.
-              Amet ducimus quos cupiditate?
+              Amet ducimus quos cupiditate?kc
+              
             </p>
-            <div className="sm:w-[100%] flex gap-4 flex-col mt-4">
-              <div>
+            <div className="sm:w-[100%] flex gap-4 relative mt-4 w-[100%] seacrh">
+              <div className="w-[100%]">
                 <input
                   type="text"
                   placeholder="search article"
-                  className="border w-[100%] border-blue-500 px-4  py-2 rounded-full text-1xl"
+                  className="border w-[100%] border-blue-500 px-4  py-2  text-1xl"
                 />
               </div>
-              <button className="bg-primary border-blue-500 px-2 py-2 rounded-full text-white hover:bg-blue-500 hover:text-white transition-all duration-500 text-1xl">
+              <button className="bg-primary border-blue-500 px-2 py-2 right-0 top-[1px] text-white hover:bg-blue-500 hover:text-white transition-all duration-500 text-1xl absolute">
                 Search
               </button>
             </div>
@@ -48,6 +49,15 @@ const HeroSection = () => {
 };
 
 const Hero = styled.div`
+  .seacrh{
+    margin-top:8.5vh;
+  } input {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+  button {
+    border-radius: 0.5rem 0 0 0.5rem;
+    width: 8rem;
+  }
   .landingIMG {
     width: 50rem;
     border-radius: 6rem 0 0rem;
