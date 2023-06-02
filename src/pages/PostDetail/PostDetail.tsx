@@ -1,86 +1,157 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MainLayout from "../../components/MainLayout";
 import styled from "styled-components";
 import Side from "./Side";
 import Comment from "../../components/Post-Comment/Comment";
+import { useNavigate, useParams } from "react-router-dom";
+import Loading from "../../components/Loading";
+import inputHelpers from "../../Helpers/inputHelpers";
+import { useDispatch, useSelector } from "react-redux";
+import { selectIsLoggedIn } from "../../redux/features/auth/userAuthSlice";
+import { getSinglePost } from "../../redux/features/post/postSlice";
+import toastNotify from "../../Helpers/toastNotify";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import {
+  Set_Comment,
+  createNewComment,
+} from "../../redux/features/comment/commentSlice";
+import axios from "axios";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
-let PostImage = require("../../assets/postImages/three.png");
 const PostDetail = () => {
+  const { id } = useParams();
+  const [comment, setComment] = useState({ description: "" });
+  const [LoadingIn, setLoadingIn] = useState(false);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const name = localStorage.getItem("name");
+  const { post, isLoading, isError, isSuccess, message } = useSelector(
+    (state: any) => state.post
+  );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleCommentInput = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const tempData = inputHelpers(e, comment);
+    setComment(tempData);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!name) {
+      toastNotify("You have to sign in to place a comment", "info")
+      navigate("/login");
+      return;
+    }
+    if (comment.description === "") {
+      toastNotify("You cant submit an empty Comment", "error");
+      // setLoadingIn(false);
+      return;
+    }
+    const { description } = comment;
+    const formData: any = new FormData();
+    formData.append("description", description);
+    await dispatch(Set_Comment(comment.description));
+    setComment({ description: "posting..." });
+    const response = await axios.post(
+      `http://localhost:5000/api/post/${id}`,
+      { description: comment.description },
+      { withCredentials: true }
+    );
+    console.log(response);
+    setComment({ description: "" });
+    dispatch(getSinglePost(id));
+    return;
+  };
+
+  useEffect(() => {
+    if (isLoggedIn === true || isLoading !== true) {
+      dispatch(getSinglePost(id));
+    }
+    if (isError) {
+      toastNotify(message, "error");
+    }
+  }, [isError, isLoggedIn, message, dispatch, id, isLoading]);
+
   return (
     <MainLayout>
       <Detail>
-        <div className="postDetail">
-          <div className="direction">
-            <p>Home / Post / Post-Title</p>
-          </div>
-          <div className="postImage">
-            <img src={PostImage} alt="postPics" />
-          </div>
-          <div className="content">
-            <div className="tag">
-              <p>TECHNOLOGY</p>
-            </div>
-            <div className="postTitle">
-              <p>Into the world of tech and Developers</p>
-            </div>
-            <div className="postDesc">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit
-              molestias mollitia repellat itaque doloremque veniam, distinctio
-              voluptate, tenetur dolores nihil dolor excepturi. Sapiente quas ab
-              omnis sunt fuga officiis porro fugit, reprehenderit, odit ad animi
-              laboriosam quis culpa molestiae eligendi incidunt quo voluptates
-              laborum nostrum distinctio? Alias vero omnis neque nostrum culpa
-              in accusantium accusamus obcaecati, et placeat, similique
-              voluptate illum, molestiae eaque explicabo ad hic officia minima
-              nisi. Possimus commodi iste necessitatibus aperiam numquam
-              deserunt harum, et unde qui, ullam ipsum magni illo, alias impedit
-              repudiandae? Reiciendis placeat optio esse ipsam deserunt
-              exercitationem natus sunt aspernatur iure, nihil eaque ipsum
-              rerum! Enim, eum magnam recusandae vitae voluptatem accusamus
-              sapiente ullam non nostrum aperiam, voluptate inventore maiores
-              quisquam autem accusantium sit suscipit incidunt quam magni totam
-              dolor commodi impedit, aut delectus! Vero, minus velit mollitia
-              consequatur aliquam atque eius, libero itaque explicabo, sunt
-              saepe quis tempora. Officia autem dicta assumenda ad accusamus non
-              animi illum, molestiae dolorum natus? Repellendus doloremque
-              sapiente itaque nemo corrupti, laborum maiores blanditiis, iure
-              consectetur hic, vitae ipsa ut quas fugiat quibusdam iusto
-              laboriosam porro? Deleniti, ad neque repudiandae fugit eius enim
-              officiis aliquid tempora quisquam consequatur consequuntur velit
-              qui commodi sunt excepturi ipsum, quaerat earum assumenda non
-              alias. Aliquid, dolor ipsam! Dolor, non veniam. Iste incidunt in
-              tenetur ad facere! Eaque temporibus commodi voluptatem voluptates?
-              Ratione asperiores quod nesciunt. Recusandae perspiciatis rerum
-              magni ipsum adipisci dolorum consequuntur necessitatibus? Fugit
-              cupiditate nemo atque. Molestias, inventore velit. Nobis ducimus
-              velit libero natus saepe quae repellendus pariatur. Eum illo
-              aliquid sint. Molestiae dolor laboriosam neque placeat illo
-              dignissimos ducimus officiis omnis possimus. Ex, reprehenderit!
-              Neque adipisci, saepe eaque voluptate dignissimos molestiae fuga
-              quibusdam nesciunt nobis cumque eveniet, blanditiis explicabo
-              facilis culpa nisi modi maxime delectus suscipit? Consectetur
-              porro nostrum repellendus ducimus provident rem, possimus error?
-              Nulla, beatae sunt?
-            </div>
-          </div>
-          <form>
-            <div className="formContent">
-              <textarea placeholder="Leave a comment here..."></textarea>
-              <div className="send">
-                <input type="submit" value="Send" />
+        {post && (
+          <div className="postDetail mt-20">
+            {LoadingIn && <Loading />}
+            <div className="direction flex w-full justify-between items-center">
+              <p>
+                Home / Post /{" "}
+                <span className="font-bold">
+                  {post?.title.substring(0, 30).concat(" ...")}
+                </span>
+              </p>
+              <div className="back ">
+                <p
+                  onClick={() => navigate(-1)}
+                  className="font-bold flex bg-primary text-white px-4 cursor-pointer rounded-lg items-center gap-4"
+                >
+                  <IoIosArrowRoundBack size={30} /> Go Back
+                </p>
               </div>
             </div>
-          </form>
-          <div className="comment">
-            <div className="commentAmount">
-              <p className="font-bold text-dark">All Comments (2)</p>
+            <div className="postImage overflow-hidden">
+              <LazyLoadImage
+                alt={post.image.fileName}
+                src={post?.image.filePath}
+                effect="blur"
+              />
             </div>
-            <div className="commentSection">
-              <Comment />
-              <Comment />
+            <div className="content">
+              <div className="tag">
+                <p className="font-bold">{post?.category.toUpperCase()}</p>
+              </div>
+              <div className="postTitle">
+                <p className="font-bold">{post?.title}</p>
+              </div>
+              <div className="postDesc">{post?.content}</div>
+            </div>
+            {!name ? (
+              <p className="text-[red] text-center font-bold">Login In to be able to place comments</p>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="formContent">
+                  <textarea
+                    placeholder="Leave a comment here..."
+                    name="description"
+                    value={comment.description}
+                    onChange={handleCommentInput}
+                  ></textarea>
+                  <div className="send">
+                    <input type="submit" value="Send" />
+                  </div>
+                </div>
+              </form>
+            )}
+            <div className="comment">
+              <div className="commentAmount">
+                <p className="font-bold text-dark">
+                  {post?.comments.length === 0 ? (
+                    <span>No Comment</span>
+                  ) : (
+                    <span>All Comments ({post?.comments.length})</span>
+                  )}
+                </p>
+              </div>
+              <div className="commentSection">
+                {post?.comments.map((comment: any, index: any) => (
+                  <Comment comment={comment} key={index} />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* <Loading /> */}
+
         <Side />
       </Detail>
     </MainLayout>
@@ -105,12 +176,15 @@ const Detail = styled.div`
       color: #1565d8;
     }
     .postImage {
-      width: 100%;
+      width: 948.8px;
+      height: 603.86;
+      overflow: hidden;
+      border-radius: 1rem;
+      box-shadow: rgba(21, 101, 216, 0.3) 0px 9px 20px;
       img {
-        width: 100%;
+        width: 948.8px;
+        height: 603.86px;
         margin: auto;
-        border-radius: 1rem;
-        box-shadow: rgba(21, 101, 216, 0.3) 0px 9px 20px;
       }
     }
     .content {
@@ -138,8 +212,8 @@ const Detail = styled.div`
       display: flex;
       align-items: end;
       justify-content: center;
-      flex-direction:column;
-      gap:.6rem;
+      flex-direction: column;
+      gap: 0.6rem;
       textarea {
         border: 1px solid #1565d8;
         width: 100%;
@@ -182,6 +256,7 @@ const Detail = styled.div`
       justify-content: center;
       gap: 1rem;
       .commentSection {
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: start;

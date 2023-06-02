@@ -4,17 +4,19 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import toastNotify from "../../Helpers/toastNotify";
-import { registerUser, validateEmail } from "../../services/authService";
-import registrationData from "../../interfaces/registrationData";
+import {
+  registerUser,
+  validateEmail,
+} from "../../redux/features/auth/authService";
 import { useDispatch } from "react-redux";
-
 import Loading from "../../components/Loading";
-import { useRegisterUserMutation } from "../../redux/Apis/authAPI";
-import userModel from "../../interfaces/userModel";
-import apiResponse from "../../interfaces/apiResponse";
+import {
+  Set_User,
+  User_Fullname,
+  User_Loggedin,
+} from "../../redux/features/auth/userAuthSlice";
 
 const Register = () => {
-  const [registerUser] = useRegisterUserMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,50 +46,49 @@ const Register = () => {
     if (!userInput.name || !userInput.email || !userInput.password) {
       return toastNotify("Please, Fill all inputs", "error");
     }
-    if (userInput.password !== userInput.confirmPassword) {
-      return toastNotify("Passwords does not match", "error");
-    }
     if (userInput.password.length < 6) {
       return toastNotify("Password  cannot be less than 6 characters", "error");
+    }
+    if (userInput.password !== userInput.confirmPassword) {
+      return toastNotify("Passwords does not match", "error");
     }
     if (!validateEmail(userInput.email)) {
       return toastNotify("Please enter a valid email", "error");
     }
-    setIsLoading(true)
-    const userData: apiResponse = await registerUser({
-      name: userInput.name,
-      email: userInput.email,
-      password: userInput.password,
-    });
-    if (userData.data) {
-      toastNotify("Registration Sucessful!!!", "success");
-      navigate("/");
-    } else if (userData.error) {
-      toastNotify(
-        `${userData.error.data.message}, Please use a different email`,
-        "error"
-        );
-        setIsLoading(false)
-      }
-      setIsLoading(false)
+
+    setIsLoading(true);
+    try {
+      const userData: any = await registerUser({
+        name: userInput.name,
+        email: userInput.email,
+        password: userInput.password,
+      });
+      await dispatch(User_Loggedin(true));
+      await dispatch(User_Fullname(userData.name));
+      await dispatch(
+        Set_User({
+          name: userData.name,
+          email: userData.email,
+          photo: userData.photo,
+        })
+      );
+      navigate("/updateuser");
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   return (
     <MainLayout>
       <Signup className="container mx-auto px-5 py-10">
         {isLoading && <Loading />}
-        <div className="register w-full max-w-sm mx-auto">
+        <div className="register w-full max-w-sm mx-auto mt-20">
           <h1 className="heading text-2xl font-bold text-center text-dark-hard mb-8">
             Register
           </h1>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col mb-6 w-full">
-              {/* <label
-                htmlFor="name"
-                className="text-[#5a7184] font-semibold block text-[.8rem]"
-              >
-                Name
-              </label> */}
               <input
                 type="text"
                 id="name"
@@ -100,12 +101,6 @@ const Register = () => {
             </div>
 
             <div className="flex flex-col mb-6 w-full">
-              {/* <label
-                htmlFor="email"
-                className="text-[#5a7184] font-semibold block text-1xl"
-              >
-                Email Address
-              </label> */}
               <input
                 type="text"
                 id="email"
@@ -118,12 +113,6 @@ const Register = () => {
             </div>
 
             <div className="flex flex-col mb-6 w-full password">
-              {/* <label
-                htmlFor="password"
-                className="text-[#5a7184] font-semibold block text-1xl"
-              >
-                Password
-              </label> */}
               <input
                 type={revealPassword ? "text" : "password"}
                 id="password"
@@ -143,12 +132,6 @@ const Register = () => {
               </div>
             </div>
             <div className="flex flex-col mb-6 w-full password">
-              {/* <label
-                htmlFor="confirm password"
-                className="text-[#5a7184] font-semibold block text-1xl"
-              >
-                Confirm Password
-              </label> */}
               <input
                 type={revealPassword ? "text" : "password"}
                 id="confirm password"
@@ -200,7 +183,7 @@ const Register = () => {
 };
 
 const Signup = styled.div`
-  min-height: 75vh;
+  min-height: 72.6vh;
   .register {
     box-shadow: rgba(21, 101, 216, 0.3) 0px 9px 20px;
     padding: 1rem 2rem;

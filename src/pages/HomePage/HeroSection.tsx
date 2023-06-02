@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 let Obilo = require("../../assets/heroLanding.jpg");
 const HeroSection = () => {
+ 
+
+
   return (
     <Hero>
-      <div className="content flex items-center justify-between w-[100%] pt-[3rem] gap-2 sm:flex sm:flex-col-reverse sm:px-[1rem] sm:pt-[2rem] sm:gap-10 relative ">
+      <div className="content mt-20 flex items-center justify-between w-[100%] pt-[3rem] gap-2 sm:flex sm:flex-col-reverse sm:px-[1rem] sm:pt-[2rem] sm:gap-10 relative ">
         <div className="w-[50%] sm:w-[100%] relative">
           <div className="insideHeroLeft flex flex-col gap-10 sm:gap-2">
             <h1 className="text-6xl text-[Secondary] font-bold sm:text-2xl">
@@ -23,10 +26,9 @@ const HeroSection = () => {
               nobis voluptates aut expedita cumque quaerat enim exercitationem,
               quam minus nostrum eveniet et nemo corrupti repellat pariatur.
               Amet ducimus quos cupiditate?kc
-              
             </p>
-            <div className="sm:w-[100%] flex gap-4 relative mt-4 w-[100%] seacrh">
-              <div className="w-[100%]">
+            <div className="sm:w-[100%] flex gap-4 relative mt-2 w-[100%] seacrh">
+              {/* <div className="w-[100%]">
                 <input
                   type="text"
                   placeholder="search article"
@@ -35,7 +37,10 @@ const HeroSection = () => {
               </div>
               <button className="bg-primary border-blue-500 px-2 py-2 right-0 top-[1px] text-white hover:bg-blue-500 hover:text-white transition-all duration-500 text-1xl absolute">
                 Search
-              </button>
+              </button> */}
+              <h1 className="text-6xl text-dark font-bold tracking-wide">
+                WELCOME TO <span className="text-primary">BLOG</span>XITE
+              </h1>
             </div>
           </div>
         </div>

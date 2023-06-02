@@ -1,20 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SideDetail from "../../components/SideDetail";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { selectIsLoggedIn } from "../../redux/features/auth/userAuthSlice";
+import { getPosts, selectAllPosts, selectIsloading } from "../../redux/features/post/postSlice";
 
 const Side = () => {
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const isLoading = useSelector(selectIsloading);
+  const allPost = useSelector(selectAllPosts);
+  const [allPostings, setAllPostings] = useState(allPost);
+
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setAllPostings(allPost);
+  }, [dispatch, allPost]);
+
+  const sixPostings = allPostings.slice(0,6)
   return (
-    <SideD>
-      <p className="heading text-secondary">Latest Article</p>
+    <SideD className="mt-20">
+      <p className="heading text-secondary ">Latest Article</p>
       <div className="sideContent">
-        <SideDetail />
-        <SideDetail />
-        <SideDetail />
-        <SideDetail />
-        <SideDetail />
-        <SideDetail />
-        <div className="category">
+        {sixPostings.map((sidePost:any, index:any) => (
+          <SideDetail key={index} post={sidePost} />
+        ))}
+
+        {/* <div className="category">
           <p className="heading text-secondary">Categories : </p>
           <div className="catLinks">
             <Link to="/">Technology</Link>
@@ -23,7 +39,7 @@ const Side = () => {
             <Link to="/">Fashion</Link>
             <Link to="/">Military</Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </SideD>
   );

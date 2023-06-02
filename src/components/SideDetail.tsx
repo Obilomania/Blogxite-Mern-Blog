@@ -2,16 +2,15 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-let IMG = require("../assets/postImages/four.png");
-const SideDetail = () => {
+const SideDetail = ({post}:any) => {
   return (
     <SDetail>
-      <Link to="/" className="latest">
+      <Link to={`/post/${post?.id}`} className="latest">
         <div className="content">
-          <img src={IMG} alt="" />
+          <img src={post?.image.filePath} alt="" />
           <div className="contentInfo">
-            <p className="info">Tech is Good and is saving lives</p>
-            <p className="date">23 May 2023</p>
+            <p className="info">{post.title.substring(0,30).concat("...") }</p>
+            <p className="date">{post?.created }</p>
           </div>
         </div>
       </Link>

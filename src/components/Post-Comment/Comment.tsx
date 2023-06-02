@@ -5,36 +5,31 @@ import { IoPencilOutline } from "react-icons/io5";
 import { BsTrash } from "react-icons/bs";
 import Reply from "./Reply";
 import ReplyForm from "./ReplyForm";
+import { useSelector } from "react-redux";
 
-let Obilo = require("../../assets/Obi-min.png");
-const Comment = () => {
+
+const Comment = ({comment, index} : any) => {
   const [openReply, setOpenReply] = useState(false);
-  const revealReply = (e: React.FormEvent) => {
-    e.preventDefault();
-    setOpenReply(!openReply);
-  };
-
+  const revealReply = (e: React.FormEvent) => { setOpenReply(!openReply); };
+  const { post, isError, isSuccess, message } = useSelector(
+    (state: any) => state.comment
+  );
   return (
     <CommentSection>
-      <div className="commentContent">
-        <div className="comment">
-          <div className="image">
+      <div className="commentContent w-[100%]">
+        <div className="comment w-[100%]" key={index}>
+          {/* <div className="image">
             <img src={Obilo} alt="" />
-          </div>
-          <div className="commenter">
+          </div> */}
+          <div className="commenter w-[100%]">
             <div className="author">
               <div className="commenterDetail">
-                <p className="name">Obinna Ishmael Iloanya</p>
-                <p className="date">23 May 2023, 04:27PM</p>
+                <p className="name">{comment?.user.name}</p>
+                <p className="date">{comment?.created}</p>
               </div>
             </div>
 
-            <p className="theContent">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus
-              ipsam, maiores amet totam animi nemo quas cumque? Dolor, maiores
-              deserunt repellendus, voluptas fugiat et, fuga temporibus
-              laboriosam harum molestiae debitis?
-            </p>
+            <p className="theContent w-[100%]">{comment?.description}</p>
             <div className={openReply ? "closCAL" : "CAL"}>
               <p onClick={revealReply}>
                 <FiMessageSquare /> Reply
@@ -47,11 +42,11 @@ const Comment = () => {
               </p>
             </div>
           </div>
-          <ReplyForm revealReply={revealReply} openReply={openReply} />
+          {/* <ReplyForm revealReply={revealReply} openReply={openReply} /> */}
         </div>
-        <div className="reply">
+        {/* <div className="reply">
           <Reply />
-        </div>
+        </div> */}
       </div>
     </CommentSection>
   );
@@ -65,6 +60,9 @@ const CommentSection = styled.div`
   justify-content: center;
   gap: 1rem;
 
+  .commenter .theContent{
+    width:100%;
+  }
   .commentContent {
     width: 100%;
     display: flex;

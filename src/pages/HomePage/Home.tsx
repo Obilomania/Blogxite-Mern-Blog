@@ -1,18 +1,15 @@
-import React from 'react'
-import MainLayout from '../../components/MainLayout'
-import HeroSection from './HeroSection'
-import Post from './Post'
-
-
-
+import React from "react";
+import MainLayout from "../../components/MainLayout";
+import HeroSection from "./HeroSection";
+import Post from "./Post";
 
 const Home = () => {
   return (
-      <MainLayout>
+    <MainLayout>
       <HeroSection />
-      <Post/>
+      <Post />
     </MainLayout>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

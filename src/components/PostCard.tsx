@@ -1,32 +1,41 @@
 import React from "react";
 import styled from "styled-components";
 import { MdOutlineVerifiedUser } from "react-icons/md";
-let PostIMG = require("../assets/postImages/three.png");
-let Author = require("../assets/Obi-min.png");
+import { Link } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
-const PostCard = () => {
+const PostCard = ({ post }: any) => {
   return (
     <PCard>
-      <div className="imgeheading">
-        <img src={PostIMG} alt="Heading" />
-      </div>
-      <div className="content">
-        <p className="tag">Technology</p>
-        <p className="title text-dark">Into the world of tech and Developers</p>
-        <p className="writeUp">
-          Tech is taking over and the demand for developers is on the rise
-        </p>
+      <Link to={`/post/${post?.id}`}>
+        <div className="imgeheading">
+          <LazyLoadImage
+            alt={post.image.fileName}
+            src={post?.image.filePath}
+            effect="blur"
+          />
+        </div>
+        <div className="content">
+          <p className="tag">{post?.category}</p>
+          <p className="title text-dark">
+            {post?.title.substring(0, 15).concat(" ...")}
+          </p>
+          <p className="writeUp">
+            {post?.content.substring(0, 70).concat(" ")}{" "}
+            <span className="font-bold text-primary">Read More ...</span>
+          </p>
+        </div>
         <div className="author">
           <div className="authee">
-            <img src={Author} alt="blogger" />
-            <p className="name">Obilomania</p>
+            <p className="name text-[.6rem]">{post.comments.length} comments</p>
             <p className="status text-green-500">
               <MdOutlineVerifiedUser />
             </p>
           </div>
-          <p className="date font-bold text-[.8rem]">21 May</p>
+          <p className="date font-bold text-[.6rem]">{post.created}</p>
         </div>
-      </div>
+      </Link>
     </PCard>
   );
 };
@@ -38,6 +47,7 @@ const PCard = styled.div`
   overflow: hidden;
   height: 27.5rem;
   border-radius: 1rem;
+  position: relative;
   /* height:28rem; */
   .title {
     font-weight: bolder;
@@ -45,7 +55,7 @@ const PCard = styled.div`
   .content {
     padding: 3rem 1rem 1rem 1rem;
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: center;
     flex-direction: column;
     gap: 1.1rem;
@@ -56,11 +66,11 @@ const PCard = styled.div`
     top: 1rem;
     left: 1rem;
     background: rgba(124, 176, 250, 0.3);
-    font-size:.8rem;
-    padding:.3rem .6rem;
-    border-radius:1rem;
-    letter-spacing:1px;
-    font-weight:bolder;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 1rem;
+    letter-spacing: 1px;
+    font-weight: bolder;
   }
   .writeUp {
     font-size: 0.9rem;
@@ -74,12 +84,18 @@ const PCard = styled.div`
   }
   img {
     width: 20rem;
+    height: 15rem;
   }
   .author {
     width: 100%;
     display: flex;
+    /* flex-direction:c olumn; */
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
+    position: absolute;
+    width: 90%;
+    bottom: 1rem;
+    left: 0.8rem;
   }
   .authee {
     display: flex;
@@ -87,6 +103,7 @@ const PCard = styled.div`
     justify-content: center;
     gap: 0.2rem;
     font-size: 0.9rem;
+
     .name {
       font-weight: bolder;
       font-style: italic;
@@ -215,15 +232,15 @@ const PCard = styled.div`
     }
   }
   @media screen and (max-width: 640px) {
-    width: fit-content;
     box-shadow: rgba(21, 101, 216, 0.3) 0px 9px 20px;
     width: 100%;
     padding-bottom: 0rem;
     overflow: hidden;
-    height: 23rem;
+    height: 27rem;
     border-radius: 1rem;
     .title {
       font-weight: bolder;
+      margin-top: 3rem;
     }
     .content {
       padding: 1rem;
@@ -237,6 +254,7 @@ const PCard = styled.div`
       font-size: 0.9rem;
       color: grey;
       text-align: justify;
+      margin: 1rem 0;
     }
     .imgeheading {
       width: 100%;
@@ -272,15 +290,19 @@ const PCard = styled.div`
     }
   }
   @media screen and (max-width: 450px) {
-    width: fit-content;
     box-shadow: rgba(21, 101, 216, 0.3) 0px 9px 20px;
     width: 100%;
     padding-bottom: 0rem;
     overflow: hidden;
-    height: 23rem;
+    height: 27rem;
     border-radius: 1rem;
+    .tag {
+      margin-top: -2rem;
+    }
     .title {
       font-weight: bolder;
+      font-size: 1rem;
+      margin-top: 0;
     }
     .content {
       padding: 1rem;
